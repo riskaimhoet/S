@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Happy Birthday Sat</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background: #02121d;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    #ocean {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      display: block;
+    }
+
+    /* Teks ucapan otomatis */
+    .intro-text {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: #ffffff;
+      font-size: 42px;
+      font-weight: bold;
+      opacity: 0;
+      pointer-events: none;
+      animation: fadeInOut 6s ease-in-out forwards;
+      text-shadow: 0 0 15px rgba(255, 255, 255, 0.8);
+    }
+
+    @keyframes fadeInOut {
+      0% { opacity: 0; transform: translate(-50%, -50%) scale(0.95); }
+      20% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+      80% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+      100% { opacity: 0; transform: translate(-50%, -50%) scale(0.95); }
+    }
+
+    .message-btn {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: linear-gradient(145deg, #003d73, #0077c0);
+      color: white;
+      border: none;
+      padding: 14px 18px;
+      border-radius: 50px;
+      font-size: 16px;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+      transition: transform 0.2s ease;
+    }
+
+    .message-btn:hover {
+      transform: scale(1.1);
+    }
+
+    .popup {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(255, 255, 255, 0.9);
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+      display: none;
+      max-width: 300px;
+      width: 80%;
+      text-align: center;
+    }
+
+    .popup textarea {
+      width: 100%;
+      height: 100px;
+      resize: none;
+      padding: 8px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      margin-bottom: 10px;
+      font-family: inherit;
+    }
+
+    .popup button {
+      margin: 5px;
+      padding: 8px 14px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .popup .ok {
+      background: #0077c0;
+      color: white;
+    }
+
+    .popup .cancel {
+      background: #ccc;
+    }
+
+    .banner {
+      position: fixed;
+      top: -100px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: linear-gradient(145deg, #004e92, #000428);
+      color: white;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+      max-width: 80%;
+      text-align: center;
+      font-size: 18px;
+      transition: top 0.8s ease;
+    }
+
+    .banner.show {
+      top: 30px;
+    }
+
+    .banner span {
+      display: block;
+      font-size: 14px;
+      opacity: 0.8;
+      margin-top: 5px;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="ocean"></canvas>
+
+  <!-- ✨ Teks ucapan otomatis -->
+  <div class="intro-text">Happy 23 Sat ✨</div>
+
+  <button class="message-btn">Sat 💌</button>
+
+  <div class="popup">
+    <h3>Ketik ucapanmu ✨</h3>
+    <textarea placeholder="Tulis pesan spesialmu di sini..."></textarea>
+    <br>
+    <button class="ok">Tampilkan</button>
+    <button class="cancel">Batal</button>
+  </div>
+
+  <div class="banner" id="banner"></div>
+
+  <script>
+    // === ANIMASI LAUT MALAM ===
+    const canvas = document.getElementById('ocean');
+    const ctx = canvas.getContext('2d');
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+
+    let waveOffset = 0;
+
+    function drawBackground() {
+      const skyGradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+      skyGradient.addColorStop(0, '#02121d');
+      skyGradient.addColorStop(1, '#05385b');
+      ctx.fillStyle = skyGradient;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      for (let i = 0; i < 100; i++) {
+        const x = Math.random() * canvas.width;
+        const y = Math.random() * canvas.height * 0.5;
+        ctx.fillStyle = 'white';
+        ctx.fillRect(x, y, 1.2, 1.2);
+      }
+
+      ctx.beginPath();
+      ctx.arc(canvas.width * 0.8, canvas.height * 0.2, 40, 0, Math.PI * 2);
+      ctx.fillStyle = '#f7f1c6';
+      ctx.fill();
+    }
+
+    function drawWaves() {
+      const baseY = canvas.height * 0.7;
+      ctx.beginPath();
+      ctx.moveTo(0, baseY);
+      for (let x = 0; x <= canvas.width; x++) {
+        let y = baseY + Math.sin(x * 0.02 + waveOffset) * 10;
+        ctx.lineTo(x, y);
+      }
+      ctx.lineTo(canvas.width, canvas.height);
+      ctx.lineTo(0, canvas.height);
+      ctx.closePath();
+
+      const waterGradient = ctx.createLinearGradient(0, baseY, 0, canvas.height);
+      waterGradient.addColorStop(0, '#004e92');
+      waterGradient.addColorStop(1, '#000428');
+      ctx.fillStyle = waterGradient;
+      ctx.fill();
+    }
+
+    function drawBoat() {
+      const boatX = canvas.width * 0.4;
+      const boatY = canvas.height * 0.65 + Math.sin(waveOffset) * 5;
+
+      ctx.beginPath();
+      ctx.moveTo(boatX - 50, boatY);
+      ctx.lineTo(boatX + 50, boatY);
+      ctx.lineTo(boatX + 30, boatY + 20);
+      ctx.lineTo(boatX - 30, boatY + 20);
+      ctx.closePath();
+      ctx.fillStyle = '#8B4513';
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.moveTo(boatX, boatY);
+      ctx.lineTo(boatX, boatY - 60);
+      ctx.strokeStyle = '#fff';
+      ctx.lineWidth = 3;
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(boatX, boatY - 60);
+      ctx.lineTo(boatX + 40, boatY - 30);
+      ctx.lineTo(boatX, boatY);
+      ctx.closePath();
+      ctx.fillStyle = '#ffffff';
+      ctx.fill();
+    }
+
+    function animate() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      drawBackground();
+      drawWaves();
+      drawBoat();
+      waveOffset += 0.02;
+      requestAnimationFrame(animate);
+    }
+    animate();
+
+    // === POPUP UCAPAN ===
+    const popup = document.querySelector('.popup');
+    const btn = document.querySelector('.message-btn');
+    const ok = document.querySelector('.ok');
+    const cancel = document.querySelector('.cancel');
+    const textarea = document.querySelector('.popup textarea');
+    const banner = document.getElementById('banner');
+
+    btn.addEventListener('click', () => {
+      popup.style.display = 'block';
+    });
+
+    cancel.addEventListener('click', () => {
+      popup.style.display = 'none';
+    });
+
+    ok.addEventListener('click', () => {
+      const message = textarea.value.trim();
+      if (message) {
+        banner.innerHTML = message + '<span>— dari kamu 💛</span>';
+        banner.classList.add('show');
+        popup.style.display = 'none';
+        textarea.value = '';
+        setTimeout(() => {
+          banner.classList.remove('show');
+        }, 8000);
+      }
+    });
+
+    window.addEventListener('keydown', e => {
+      if (e.key === 'Escape') popup.style.display = 'none';
+    });
+  </script>
+</body>
+</html>
