@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Birthday Dashboard for Sat</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #0a1a2f;
+      color: white;
+      font-family: 'Poppins', sans-serif;
+      overflow: hidden;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    h1 {
+      margin-bottom: 50px;
+      font-size: 2rem;
+      letter-spacing: 2px;
+      color: #a0c4ff;
+    }
+
+    .scroll-container {
+      display: flex;
+      overflow-x: scroll;
+      scroll-behavior: smooth;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      width: 80%;
+      position: relative;
+    }
+
+    .scroll-container::-webkit-scrollbar {
+      display: none;
+    }
+
+    /* padding tak terlihat di kiri-kanan supaya tidak mentok */
+    .spacer {
+      flex: 0 0 40%;
+    }
+
+    .year {
+      flex: 0 0 30%;
+      text-align: center;
+      font-size: 2.5rem;
+      transition: transform 0.4s ease, color 0.4s ease;
+      opacity: 0.6;
+      color: #ccd6f6;
+      cursor: pointer;
+      scroll-snap-align: center;
+    }
+
+    .year.active {
+      transform: scale(1.6);
+      color: #64ffda;
+      opacity: 1;
+    }
+
+    .message {
+      margin-top: 30px;
+      font-size: 1.2rem;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <h1>🎂 Birthday Dashboard for Sat 🎁</h1>
+
+  <div class="scroll-container" id="scrollContainer">
+    <div class="spacer"></div>
+
+    <div class="year">2020</div>
+    <div class="year">2021</div>
+    <div class="year">2022</div>
+    <div class="year">2023</div>
+    <div class="year">2024</div>
+    <div class="year">2025</div>
+    <div class="year">2026</div>
+
+    <div class="spacer"></div>
+  </div>
+
+  <div class="message" id="messageBox"></div>
+
+  <script>
+    const container = document.getElementById('scrollContainer');
+    const years = document.querySelectorAll('.year');
+    const messageBox = document.getElementById('messageBox');
+
+    function updateActiveYear() {
+      let center = container.scrollLeft + container.offsetWidth / 2;
+      let closest = null;
+      let closestDist = Infinity;
+
+      years.forEach((year) => {
+        const yearCenter = year.offsetLeft + year.offsetWidth / 2;
+        const dist = Math.abs(center - yearCenter);
+        if (dist < closestDist) {
+          closestDist = dist;
+          closest = year;
+        }
+      });
+
+      years.forEach((year) => year.classList.remove('active'));
+      if (closest) closest.classList.add('active');
+    }
+
+    container.addEventListener('scroll', updateActiveYear);
+    updateActiveYear();
+
+    years.forEach((year) => {
+      year.addEventListener('click', () => {
+        if (year.classList.contains('active')) {
+          const selectedYear = year.textContent.trim();
+          // arahkan ke halaman sesuai tahun
+          window.location.href = `${selectedYear}.html`;
+        } else {
+          // kalau belum aktif, kasih efek getar kecil biar user tahu
+          year.style.transform = "scale(1.2)";
+          setTimeout(() => {
+            year.style.transform = "";
+          }, 200);
+        }
+      });
+    });
+  </script>
+</body>
+</html>
